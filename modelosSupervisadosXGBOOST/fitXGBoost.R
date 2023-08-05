@@ -31,7 +31,8 @@ visualise_error <- function(evaluation_log, error_metric){
                           names_to = 'sample',
                           values_to = 'value') %>% 
              ggplot(aes(iter, value, group=sample, colour=sample)) +
-             geom_line()
+             geom_line() +
+             theme_ipsum()
            )
     
   }
@@ -43,7 +44,8 @@ visualise_error <- function(evaluation_log, error_metric){
                             names_to = 'sample',
                             values_to = 'value') %>% 
                ggplot(aes(iter, value, group=sample, colour=sample)) +
-               geom_line()
+               geom_line() +
+               theme_ipsum()
       )
       
     }
@@ -55,7 +57,8 @@ visualise_error <- function(evaluation_log, error_metric){
                             names_to = 'sample',
                             values_to = 'value') %>% 
                ggplot(aes(iter, value, group=sample, colour=sample)) +
-               geom_line()
+               geom_line() +
+               theme_ipsum()
       )
       
     }

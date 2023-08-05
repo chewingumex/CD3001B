@@ -26,6 +26,9 @@ fitXGBBinary <- function(xgbTrain, xgbTest, iterations){
     # cada iteración 
       
     hparams = list(
+  #    booster = 'gbtree',
+  #   objective = 'binary:logistic', 
+  #    eval_metric = 'auc',
       eta = runif(1, 0.01, 0.3),
       lambda = runif(1, 0.01, 0.2),
       alpha = runif(1, 0.01, 0.2),
@@ -41,7 +44,7 @@ fitXGBBinary <- function(xgbTrain, xgbTest, iterations){
     
   xgbCV <- xgb.cv(
     booster = 'gbtree',
-    objective = 'binary:logistic', 
+    objective = 'binary:hinge', 
     eval_metric = 'auc',
     params = hparams, 
     nfold = 10,
@@ -69,7 +72,11 @@ fitXGBBinary <- function(xgbTrain, xgbTest, iterations){
   
   # Ajustar un modelo final con los mejores hiperparámetros, probándolo ahora en el test set
   
- finalmodel <-  xgb.train(
+ finalmodel <-  
+   xgb.train(
+     booster = 'gbtree',
+     objective = 'binary:hinge', 
+     eval_metric = 'auc',
     params= params,
     data=xgbTrain,
     nrounds=50,

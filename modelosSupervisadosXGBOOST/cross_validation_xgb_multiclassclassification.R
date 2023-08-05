@@ -1,33 +1,3 @@
-## install.packages(c('tidyverse', 'xgboost', 'rsample')) ## update later
-
-library(tidyverse)
-library(xgboost)
-library(rsample)
-
-# leer datos
-
-df <- 
-  read_csv('/Users/maugarciagarza/Downloads/data_fraude.csv') %>% 
-  select(-X1)
-
-# pre-process datos (si es necesario)
-
-df <- 
-df %>% 
-  rename("fraude" = "0_1")
-
-# dividir train / test 
-
-split <- initial_split(df, prop = 0.80)
-
-train <- training(split)
-test <- testing(split)
-
-# crear matrices de xgboost
-
-xvars <- (df %>% names)[df %>% names != 'fraude']
-yvar <- 'fraude'
-
 
 makeXGBMatrix <- function(xvars, yvar, df){
   
@@ -42,20 +12,12 @@ makeXGBMatrix <- function(xvars, yvar, df){
   
 }
 
-xgbTrain <- makeXGBMatrix(xvars=xvars,
-                          yvar=yvar,
-                          df=train)
-
-xgbTest <- makeXGBMatrix(xvars=xvars,
-                          yvar=yvar,
-                          df=test)
-
-fitxgboost <- function(xgbTrain, xgbTest, iterations){
+fitXGBMulticlass <- function(xgbTrain, xgbTest, iterations){
   
   # iniciar el valor de la métrica del cual partimos (alto para métricas que queremos reducir
   # y viceversa)
   
-  auc = 0
+  logloss = 0
   params = list()
   
   for (i in 1:iterations){
@@ -79,28 +41,29 @@ fitxgboost <- function(xgbTrain, xgbTest, iterations){
     
   xgbCV <- xgb.cv(
     booster = 'gbtree',
-    objective = 'binary:logistic', 
-    eval_metric = 'auc',
+    objective = 'multi:softmax', 
+    eval_metric = 'mlogloss',
     params = hparams, 
     nfold = 10,
     nrounds = 10000,
     early_stopping_rounds = 2,
-    maximize = TRUE,
+    maximize = F,
     data = xgbTrain,
-    verbose = 2
+    verbose = 2,
+    num_class = 9
   )
   
   # registrar la métrica
   
-  auc2 <- xgbCV$evaluation_log[xgbCV$best_iteration]$test_auc_mean
+  logloss2 <- xgbCV$evaluation_log[xgbCV$best_iteration]$test_mlogloss_mean
   
   # si la métrica alcanzada fuera mejor que la actual, reemplazar la actual  y guardar los
   # hiperparámetros del modelo que llegó a ella.
   # Nota : la métrica debe ser menor si se esta reduciendo (ej rmse) o mayor si se esta aumentando (ej auc)
   
   
-  if(auc2 > auc){
-    auc = auc2
+  if(logloss2 < logloss){
+    logloss2 = logloss
     params = hparams
   }
   }
@@ -108,29 +71,21 @@ fitxgboost <- function(xgbTrain, xgbTest, iterations){
   # Ajustar un modelo final con los mejores hiperparámetros, probándolo ahora en el test set
   
  finalmodel <-  xgb.train(
+   booster = 'gbtree',
+   objective = 'multi:softmax', 
+   eval_metric = 'mlogloss',
     params= params,
     data=xgbTrain,
     nrounds=50,
     early_stopping_rounds=3,
+    num_class = 9,
     watchlist = list(training = xgbTrain,
                      testing = xgbTest),
-    maximize=T
+    maximize=F
   )
   return(finalmodel)
 }
 
-# correr la función 
-
-modelo <- fitxqboost(xgbTrain, xgbTest, iterations = 10)
-
-# visualizar el error en la muestra de training y test durante el entrenamiento
-
-modelo$evaluation_log %>% 
-  pivot_longer(cols = c('training_auc','testing_auc'),
-               names_to = 'sample',
-               values_to = 'value') %>% 
-  ggplot(aes(iter, value, group=sample, colour=sample)) +
-  geom_line()
 
 
 

@@ -69,6 +69,9 @@ fitXGBRegression <- function(xgbTrain, xgbTest, iterations){
   # Ajustar un modelo final con los mejores hiperparámetros, probándolo ahora en el test set
   
  finalmodel <-  xgb.train(
+   booster = 'gbtree',
+   objective = 'reg:squarederror', 
+   eval_metric = 'rmse',
     params= params,
     data=xgbTrain,
     nrounds=50,
