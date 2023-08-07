@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+p {
+  font-size: 32px;
+  background-color: white
+}
+
+h1, h2, h3 {
+  text-align: center;
+}
+
+/* custom class definition to be used with */
+
+/* .watch-out {
+  background-color: lightpink;
+  border: 3px solid red;
+  font-weight: bold;
+}
+*/
+
+# scrollable code blocks
+pre {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 100px;
+}
+
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+
+h2, h3 {
+page-break-after: avoid;
+}
+
+@font-face {
+font-family: 'Roboto-Italic';
+font-style: italic;
+font-weight: 300;
+}
+@font-face {
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 300;
+}
+@font-face {
+font-family: 'Roboto-Bold';
+font-style: bold;
+font-weight: 700;
+}
+
+html {
+font-family: 'Roboto';
+font-size: 24px;
+max-width: 100%;
+}
+
+body {
+color: #444;
+font-family: 'Roboto';
+font-weight: 300;
+margin: 0 auto;
+max-width: 48rem;
+line-height: 1.45;
+padding: .25rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+font-family: Roboto;
+}
+h1,
+h2,
+h3 {
+border-bottom: 2px solid #fafafa;
+margin-bottom: 1.15rem;
+padding-bottom: .5rem;
+text-align: center;
+}
+blockquote {
+border-left: 8px solid #fafafa;
+padding: 1rem;
+}
+pre,
+code {
+background-color: #fafafa;
+}
+
+p {
+  font-size: 14px;
+}
