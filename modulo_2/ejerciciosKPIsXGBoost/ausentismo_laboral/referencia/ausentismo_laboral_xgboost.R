@@ -9,15 +9,17 @@ library(rsample)
 library(caret)
 
 # load all supervised modelling functions
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_binaryclassification.R')
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_linear_regression.R')
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_multiclassclassification.R')
-source('modelosSupervisadosXGBOOST/fitXGBoost.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_binaryclassification.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_linear_regression.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_multiclassclassification.R')
+source('modulo_2/modelosSupervisadosXGBOOST/fitXGBoost.R')
+source('modulo_2/modelosSupervisadosXGBOOST/viz.R')
+
 
 
 df <-
   read_excel(
-    'ejerciciosKPIsXGBoost/ausentismo_laboral/datos/Absenteeism_at_work_Project.xls'
+    'modulo_2/ejerciciosKPIsXGBoost/ausentismo_laboral/datos/Absenteeism_at_work_Project.xls'
     )
 
 # check variables
@@ -83,16 +85,6 @@ df |>
   ggplot(aes(absentism_level, group = age, fill=age)) +
   geom_density(alpha=0.4) +
   theme_ipsum()
-  
-  group_by(age) |> 
-  summarise(
-    total_hours = sum(absenteeism_time_in_hours, na.rm = T)
-  ) |> 
-  ungroup() |> 
-  ggplot(aes(age, total_hours)) +
-  geom_point() +
-  geom_smooth(method = 'lm', se= T) +
-  theme_ipsum()
 
 # absenteeism by month 
 
@@ -124,7 +116,7 @@ df |>
 
 df <-
   read_excel(
-    'ejerciciosKPIsXGBoost/ausentismo_laboral/datos/Absenteeism_at_work_Project.xls'
+    'modulo_2/ejerciciosKPIsXGBoost/ausentismo_laboral/datos/Absenteeism_at_work_Project.xls'
   ) |> 
   rename_all(
     .funs = list(
@@ -186,3 +178,9 @@ modelo <-
 
 visualise_error(evaluation_log = modelo$evaluation_log,
                 error_metric = 'rmse')
+
+
+shap_viz <- make_shap_viz(df, modelo, 'absenteeism_time_in_hours', 'contribucion_variables', target='continuous') 
+
+
+var_importance_viz  <- make_importance_viz(modelo)

@@ -7,16 +7,17 @@ library(rsample)
 library(hrbrthemes)
 
 # load all supervised modelling functions
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_binaryclassification.R')
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_linear_regression.R')
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_multiclassclassification.R')
-source('modelosSupervisadosXGBOOST/fitXGBoost.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_binaryclassification.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_linear_regression.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_multiclassclassification.R')
+source('modulo_2/modelosSupervisadosXGBOOST/fitXGBoost.R')
+source('modulo_2/modelosSupervisadosXGBOOST/viz.R')
 
 # leer datos
 
 df <-
   read_csv(
-    'ejerciciosKPIsXGBoost/deteccion_transacciones_fraudulentas/datos/data_fraude.csv'
+    'modulo_2/ejerciciosKPIsXGBoost/deteccion_transacciones_fraudulentas/datos/data_fraude.csv'
   ) %>%
   select(-...1)
 
@@ -65,6 +66,12 @@ cm <-
 
 # visualoise error at training
 
-plot <-
+error_plot <-
   visualise_error(evaluation_log = modelo$evaluation_log,
                   error_metric = 'auc')
+
+
+shap_viz <- make_shap_viz(df, modelo, 'fraude', 'contribucion_variables', target = 'binary') 
+
+
+var_importance_viz  <- make_importance_viz(modelo)

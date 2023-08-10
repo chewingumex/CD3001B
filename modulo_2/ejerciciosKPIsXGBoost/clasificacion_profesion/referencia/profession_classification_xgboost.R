@@ -7,15 +7,17 @@ library(rsample)
 library(hrbrthemes)
 
 # load all supervised modelling functions
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_binaryclassification.R')
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_linear_regression.R')
-source('modelosSupervisadosXGBOOST/cross_validation_xgb_multiclassclassification.R')
-source('modelosSupervisadosXGBOOST/fitXGBoost.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_binaryclassification.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_linear_regression.R')
+source('modulo_2/modelosSupervisadosXGBOOST/cross_validation_xgb_multiclassclassification.R')
+source('modulo_2/modelosSupervisadosXGBOOST/fitXGBoost.R')
+source('modulo_2/modelosSupervisadosXGBOOST/viz.R')
+
 
 # pre-process all data
 
 df_train <-
-  read_csv('ejerciciosKPIsXGBoost/clasificacion_profesion/datos/train.csv') %>%
+  read_csv('modulo_2/ejerciciosKPIsXGBoost/clasificacion_profesion/datos/train.csv') %>%
   select(-Var_1, -Segmentation) %>%
   mutate(
     Ever_Married = recode(Ever_Married, 'No' = 0, 'Yes' = 1),
@@ -35,7 +37,7 @@ df_train <-
   drop_na(Profession)
 
 df_test <-
-  read_csv('ejerciciosKPIsXGBoost/clasificacion_profesion/datos/test.csv') %>%
+  read_csv('modulo_2/ejerciciosKPIsXGBoost/clasificacion_profesion/datos/test.csv') %>%
   select(-Var_1) %>%
   mutate(
     Ever_Married = recode(Ever_Married, 'No' = 0, 'Yes' = 1),
@@ -83,3 +85,12 @@ cm <-
 plot <-
   visualise_error(evaluation_log = modelo$evaluation_log,
                   error_metric = 'mlogloss')
+
+shap_viz <- make_shap_viz(df_train, modelo, 'Profession', 'contribucion_variables', target = 'multiclass') 
+
+
+var_importance_viz  <- make_importance_viz(modelo)
+
+
+
+

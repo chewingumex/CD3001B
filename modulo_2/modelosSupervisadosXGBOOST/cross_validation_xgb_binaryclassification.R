@@ -12,7 +12,11 @@ makeXGBMatrix <- function(xvars, yvar, df){
 }
 
 
-fitXGBBinary <- function(xgbTrain, xgbTest, iterations){
+fitXGBBinary <- function(xgbTrain, xgbTest, iterations=1){
+  
+  # xgbTrain: XGBMatrix de los datos de entrenamiento
+  # xgbTest: XGBMatrix de los daots de prueba
+  # iterations: numero de iteraciones de validación cruzada
   
   # iniciar el valor de la métrica del cual partimos (alto para métricas que queremos reducir
   # y viceversa)
@@ -26,9 +30,6 @@ fitXGBBinary <- function(xgbTrain, xgbTest, iterations){
     # cada iteración 
       
     hparams = list(
-  #    booster = 'gbtree',
-  #   objective = 'binary:logistic', 
-  #    eval_metric = 'auc',
       eta = runif(1, 0.01, 0.3),
       lambda = runif(1, 0.01, 0.2),
       alpha = runif(1, 0.01, 0.2),
