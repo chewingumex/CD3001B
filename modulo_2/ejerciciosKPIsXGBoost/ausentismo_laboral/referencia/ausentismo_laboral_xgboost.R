@@ -16,7 +16,6 @@ source('modulo_2/modelosSupervisadosXGBOOST/fitXGBoost.R')
 source('modulo_2/modelosSupervisadosXGBOOST/viz.R')
 
 
-
 df <-
   read_excel(
     'modulo_2/ejerciciosKPIsXGBoost/ausentismo_laboral/datos/Absenteeism_at_work_Project.xls'
@@ -26,6 +25,7 @@ df <-
 
 df |> 
   str()
+
 
 # fix naming conventions
 
@@ -51,7 +51,8 @@ df |>
   drop_na() |> 
   group_by(age) |> 
   summarise(
-    total_hours = sum(absenteeism_time_in_hours, na.rm = T)
+    total_hours = sum(absenteeism_time_in_hours, na.rm = T),
+    average_hours = sum(absenteeism_time_in_hours, na.rm = T) / length(age)
   ) |> 
   ungroup() |> 
   ggplot(aes(age, total_hours)) +
@@ -66,10 +67,10 @@ df |>
   drop_na() |> 
   group_by(age) |> 
   summarise(
-    total_hours = sum(absenteeism_time_in_hours, na.rm = T)
+    average_hours = sum(absenteeism_time_in_hours, na.rm = T) / length(age)
   ) |> 
   ungroup() |> 
-  ggplot(aes(age, total_hours)) +
+  ggplot(aes(age, average_hours)) +
   geom_point() +
   geom_smooth(method = 'lm', se= T) +
   theme_ipsum()
@@ -105,10 +106,11 @@ df |>
 # absenteeism by workload
 
 df |> 
-  ggplot(aes(absenteeism_time_in_hours,`work_load_average/day`)) +
+  ggplot(aes(absenteeism_time_in_hours,`work_load_average/day`), group=age, colour=age) +
   geom_jitter() +
   geom_smooth(method = 'lm', se= T) +
-  theme_minimal()
+  theme_minimal() + 
+  facet_wrap(~age)
   
 #####################################################################
 #### MODELLING ######################################################
@@ -180,7 +182,11 @@ visualise_error(evaluation_log = modelo$evaluation_log,
                 error_metric = 'rmse')
 
 
-shap_viz <- make_shap_viz(df, modelo, 'absenteeism_time_in_hours', 'contribucion_variables', target='continuous') 
+shap_viz <- make_shap_viz(test, 
+                          modelo, 
+                          'absenteeism_time_in_hours', 
+                          'contribucion_variables', 
+                          target='continuous') 
 
 
 var_importance_viz  <- make_importance_viz(modelo)
